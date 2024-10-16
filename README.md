@@ -1,10 +1,9 @@
-# finance_manager
-
 # Fintelli
 
 A lightweight personal finanace manager
 
 Justin Moonjeli & Thomas Munoz Vasquez
+GSU CSC 4360 Mobile App Development
 
 Key Features:
 - Account
