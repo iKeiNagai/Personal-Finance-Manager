@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
               child: Text('Reports'),),
               SizedBox(height: 20),
               OutlinedButton(onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Budget()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => BudgetScreen()));
               },
               child: Text('Budget'),),
               SizedBox(height: 20),
