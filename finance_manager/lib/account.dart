@@ -10,11 +10,33 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
+  List<Map<String, dynamic>> transactions =[];
   TextEditingController _amounttController = TextEditingController();
   TextEditingController _categoryController = TextEditingController();
   TextEditingController _dateController = TextEditingController();
-  
   bool _isPositive = true;
+
+  void addTransaction(){
+    double? amount = double.tryParse(_amounttController.text);
+    String category = _categoryController.text;
+    String date = _dateController.text;
+    int accountId = widget.account['_id'];
+
+    _insertTransaction(amount!, category, date, accountId);
+    _getTransactions();
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _insertTransaction(double amount, String category, String date, int account_id) async {
+    await DatabaseHelper.instance.insertTransaction(amount, category, date, account_id);
+  }
+
+  Future<void> _getTransactions() async {
+    final data = await DatabaseHelper.instance.queryAllRowsTransaction();
+    setState(() {
+      transactions = data; 
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +46,22 @@ class _AccountState extends State<Account> {
       ),
       body: Center(
         child: Column(
-
           children: <Widget>[
             Text(widget.account['balance'].toString()),
-        
+            Expanded(
+              child: ListView.builder(
+                itemCount: transactions.length,
+                itemBuilder: (context, index){
+                  return ListTile(
+                    title: Text(transactions[index]['amount'].toString()),
+                    subtitle: Row(children: [
+                      Text(transactions[index]['category']),
+                      SizedBox(width: 30),
+                      Text(transactions[index]['date'])
+                    ],),
+                  );
+                })
+            )
           ],
         ),
       ),
@@ -71,7 +105,7 @@ class _AccountState extends State<Account> {
                           ),
                           ElevatedButton(
                             onPressed: (){
-
+                              addTransaction();
                             }, 
                             child: Text('Save'))
                         ],
