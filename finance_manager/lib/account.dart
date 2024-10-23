@@ -16,6 +16,11 @@ class _AccountState extends State<Account> {
   TextEditingController _dateController = TextEditingController();
   bool _isPositive = true;
 
+  @override
+  void initState(){
+    super.initState();
+    _getTransactions();
+  }
   void addTransaction(){
     double? amount = double.tryParse(_amounttController.text);
     String category = _categoryController.text;
@@ -32,7 +37,8 @@ class _AccountState extends State<Account> {
   }
 
   Future<void> _getTransactions() async {
-    final data = await DatabaseHelper.instance.queryAllRowsTransaction();
+    int accountId = widget.account['_id'];
+    final data = await DatabaseHelper.instance.queryAllRowsTransaction(accountId);
     setState(() {
       transactions = data; 
     });

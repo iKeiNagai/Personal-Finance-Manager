@@ -69,13 +69,16 @@ class DatabaseHelper {
     });
   }
 
-  Future<List<Map<String, dynamic>>> queryAllRowsTransaction() async {
+  Future<List<Map<String, dynamic>>> queryAllRowsTransaction(int accountId) async {
     Database db = await instance.database;
-    return await db.query(table2);
+    return await db.query(
+      table2,
+      where: '$foreignKey = ?',
+      whereArgs: [accountId]);
   }
 
   // Insert new account
-  Future<int> insert(String name, int amount, String type) async {
+  Future<int> insert(String name, double? amount, String type) async {
     Database db = await instance.database;
     return await db.insert(table,{
       columnName: name,
