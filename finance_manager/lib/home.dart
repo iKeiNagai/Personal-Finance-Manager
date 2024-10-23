@@ -27,7 +27,7 @@ class _HomeState extends State<Home> {
 
   void _addAccount(){
     String name =_nameController.text;
-    int amount = int.tryParse(_amountController.text) ?? 0;
+    double? amount = double.tryParse(_amountController.text) ?? 0;
     String type = _isCredit ? 'credit' : 'debit';
 
     _insertAccount(name, amount,type);
@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
     Navigator.of(context).pop();
   }
 
-  Future<void> _insertAccount(String name, int amount, String type) async {
+  Future<void> _insertAccount(String name, double? amount, String type) async {
     await DatabaseHelper.instance.insert(name,amount,type);
   }
 
