@@ -19,6 +19,12 @@ class _HomeState extends State<Home> {
   TextEditingController _amountController = TextEditingController();
   bool _isCredit = true;
 
+   @override
+  void initState() {
+    super.initState();
+    _getAccounts(); 
+  }
+
   void _addAccount(){
     String name =_nameController.text;
     int amount = int.tryParse(_amountController.text) ?? 0;
