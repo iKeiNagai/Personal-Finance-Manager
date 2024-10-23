@@ -39,9 +39,12 @@ class DatabaseHelper {
   }
 
   // Insert new account
-  Future<int> insert(Map<String, dynamic> row) async {
+  Future<int> insert(String name, int amount) async {
     Database db = await instance.database;
-    return await db.insert(table, row);
+    return await db.insert(table,{
+      columnName: name,
+      columnBalance: amount
+    });
   }
 
   // Retrieve all accounts

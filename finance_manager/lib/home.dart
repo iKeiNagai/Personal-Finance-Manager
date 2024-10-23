@@ -1,8 +1,10 @@
 import 'package:finance_manager/account.dart';
 import 'package:finance_manager/budget.dart';
+import 'package:finance_manager/databasehelper.dart';
 import 'package:finance_manager/investment.dart';
 import 'package:finance_manager/report.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,40 +14,110 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<Map<String, dynamic>> accounts = [];
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+
+  void _addAccount(){
+    String name =_nameController.text;
+    int amount = int.tryParse(_amountController.text) ?? 0;
+    _insertAccount(name, amount);
+    _getAccounts();
+    _nameController.clear();
+    _amountController.clear();
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _insertAccount(String name, int amount) async {
+    await DatabaseHelper.instance.insert(name,amount);
+  }
+
+  Future<void> _getAccounts() async {
+    final data = await DatabaseHelper.instance.queryAllRows();
+    setState(() {
+      accounts = data; 
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Personal Finance Manager'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: <Widget>[
+                  ...accounts.map((account) => ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    Account(account: account[DatabaseHelper.columnName])),
+                          );
+                        },
+                        child: Text('${account[DatabaseHelper.columnName]}: ${account[DatabaseHelper.columnBalance]}'),
+                      )),
+                  ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                                  title: Text('Insert Account'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextField(
+                                        controller: _nameController,
+                                        decoration: InputDecoration(hintText:'Account Name'),
+                                      ),
+                                      SizedBox(height: 20),
+                                      TextField(
+                                        controller: _amountController,
+                                        decoration: InputDecoration(hintText: "Balance"),
+                                      ),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _addAccount();
+                                            }); 
+                                          },
+                                          child: Text('Insert'))
+                                    ],
+                                  ),
+                                ));
+                      },
+                      child: Text('Insert account')),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => report()));
+                    },
+                    child: Text('Reports'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => BudgetScreen()));
+                    },
+                    child: Text('Budget'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => Investment()));
+                    },
+                    child: Text('Investments'),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('Homepage'),
-              OutlinedButton(onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Account()));
-              },
-              child: Text('Account'),),
-              SizedBox(height: 20),
-              OutlinedButton(onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => report()));
-              },
-              child: Text('Reports'),),
-              SizedBox(height: 20),
-              OutlinedButton(onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => BudgetScreen()));
-              },
-              child: Text('Budget'),),
-              SizedBox(height: 20),
-              OutlinedButton(onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Investment()));
-              },
-              child: Text('Investments'),),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
+      ),
     );
   }
 }
