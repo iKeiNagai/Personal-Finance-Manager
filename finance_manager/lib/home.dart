@@ -17,19 +17,22 @@ class _HomeState extends State<Home> {
   List<Map<String, dynamic>> accounts = [];
   TextEditingController _nameController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
+  bool _isCredit = true;
 
   void _addAccount(){
     String name =_nameController.text;
     int amount = int.tryParse(_amountController.text) ?? 0;
-    _insertAccount(name, amount);
+    String type = _isCredit ? 'credit' : 'debit';
+
+    _insertAccount(name, amount,type);
     _getAccounts();
     _nameController.clear();
     _amountController.clear();
     Navigator.of(context).pop();
   }
 
-  Future<void> _insertAccount(String name, int amount) async {
-    await DatabaseHelper.instance.insert(name,amount);
+  Future<void> _insertAccount(String name, int amount, String type) async {
+    await DatabaseHelper.instance.insert(name,amount,type);
   }
 
   Future<void> _getAccounts() async {
@@ -58,7 +61,9 @@ class _HomeState extends State<Home> {
                                     Account(account: account[DatabaseHelper.columnName])),
                           );
                         },
-                        child: Text('${account[DatabaseHelper.columnName]}: ${account[DatabaseHelper.columnBalance]}'),
+                        child: Text(
+                          '${account[DatabaseHelper.columnName]}: ${account[DatabaseHelper.columnBalance]} (${account[DatabaseHelper.columnType]})',
+                        )
                       )),
                   ElevatedButton(
                       onPressed: () {
@@ -66,26 +71,43 @@ class _HomeState extends State<Home> {
                             context: context,
                             builder: (_) => AlertDialog(
                                   title: Text('Insert Account'),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      TextField(
-                                        controller: _nameController,
-                                        decoration: InputDecoration(hintText:'Account Name'),
-                                      ),
-                                      SizedBox(height: 20),
-                                      TextField(
-                                        controller: _amountController,
-                                        decoration: InputDecoration(hintText: "Balance"),
-                                      ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _addAccount();
-                                            }); 
-                                          },
-                                          child: Text('Insert'))
-                                    ],
+                                  content: StatefulBuilder(
+                                    builder: (BuildContext context, StateSetter setState) {
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextField(
+                                            controller: _nameController,
+                                            decoration: InputDecoration(hintText:'Account Name'),
+                                          ),
+                                          SizedBox(height: 20),
+                                          TextField(
+                                            controller: _amountController,
+                                            decoration: InputDecoration(hintText: "Balance"),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Account Type: ${_isCredit ? 'Credit' : 'Debit'}'),
+                                              Switch(
+                                                value: _isCredit, 
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    _isCredit = value;
+                                                  });
+                                                })
+                                            ],
+                                          ),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _addAccount();
+                                                }); 
+                                              },
+                                              child: Text('Insert'))
+                                        ],
+                                      );
+                                    }
                                   ),
                                 ));
                       },

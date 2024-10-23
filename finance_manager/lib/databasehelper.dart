@@ -10,6 +10,7 @@ class DatabaseHelper {
   static final columnId = '_id';
   static final columnName = 'name';
   static final columnBalance = 'balance';
+  static final columnType = 'Type';
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -33,17 +34,19 @@ class DatabaseHelper {
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY,
             $columnName TEXT NOT NULL,
-            $columnBalance REAL NOT NULL
+            $columnBalance REAL NOT NULL,
+            $columnType TEXT NOT NULL
           )
           ''');
   }
 
   // Insert new account
-  Future<int> insert(String name, int amount) async {
+  Future<int> insert(String name, int amount, String type) async {
     Database db = await instance.database;
     return await db.insert(table,{
       columnName: name,
-      columnBalance: amount
+      columnBalance: amount,
+      columnType: type
     });
   }
 
