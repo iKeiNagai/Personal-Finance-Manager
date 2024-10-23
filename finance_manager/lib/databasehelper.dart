@@ -12,6 +12,15 @@ class DatabaseHelper {
   static final columnBalance = 'balance';
   static final columnType = 'Type';
 
+
+  static final table2 = 'transactions';
+
+  static final columnId_2 = 'id';
+  static final columnAmount = 'amount';
+  static final columnCategory = 'category';
+  static final columnDate = 'date';
+  static final foreignKey = 'account_id';
+
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
@@ -38,6 +47,31 @@ class DatabaseHelper {
             $columnType TEXT NOT NULL
           )
           ''');
+    
+    await db.execute('''
+          CREATE TABLE $table2 (
+            $columnAmount REAL NOT NULL,
+            $columnCategory TEXT NOT NULL,
+            $columnDate TEXT NOT NULL,
+            $foreignKey INTEGER NOT NULL,
+            FOREIGN KEY ($foreignKey) REFERENCES $table($columnId) ON DELETE CASCADE
+          )
+          ''');
+  }
+
+  Future<int> insertTransaction(double? amount, String category, String date, int accountId) async {
+    Database db = await instance.database;
+    return await db.insert(table2,{
+      columnAmount: amount,
+      columnCategory: category,
+      columnDate: date,
+      foreignKey: accountId
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllRowsTransaction() async {
+    Database db = await instance.database;
+    return await db.query(table2);
   }
 
   // Insert new account
