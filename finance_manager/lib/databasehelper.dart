@@ -19,6 +19,7 @@ class DatabaseHelper {
   static final columnAmount = 'amount';
   static final columnCategory = 'category';
   static final columnDate = 'date';
+  static final columnExpense = 'isExpense';
   static final foreignKey = 'account_id';
 
   DatabaseHelper._privateConstructor();
@@ -54,18 +55,20 @@ class DatabaseHelper {
             $columnAmount REAL NOT NULL,
             $columnCategory TEXT NOT NULL,
             $columnDate TEXT NOT NULL,
+            $columnExpense INTEGER NOT NULL,
             $foreignKey INTEGER NOT NULL,
             FOREIGN KEY ($foreignKey) REFERENCES $table($columnId) ON DELETE CASCADE
           )
           ''');
   }
 
-  Future<int> insertTransaction(double? amount, String category, String date, int accountId) async {
+  Future<int> insertTransaction(double? amount, String category, String date,bool isExpense,int accountId) async {
     Database db = await instance.database;
     return await db.insert(table2,{
       columnAmount: amount,
       columnCategory: category,
       columnDate: date,
+      columnExpense: isExpense ? 1 : 0,
       foreignKey: accountId
     });
   }

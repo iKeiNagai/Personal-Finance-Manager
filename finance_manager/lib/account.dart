@@ -26,18 +26,18 @@ class _AccountState extends State<Account> {
     _getTransactions();
   }
 
-  void addTransaction(bool isPositive){
+  void addTransaction(bool isExpense){
     double? amount = double.tryParse(_amounttController.text);
     String category = _categoryController.text;
     String date = _dateController.text;
     int accountId = widget.account['_id'];
 
-    double newBalance = isPositive
+    double newBalance = isExpense
       ? currentBalance - amount!
       : currentBalance + amount!;
 
 
-    _insertTransaction(amount, category, date, accountId);
+    _insertTransaction(amount, category, date, isExpense ,accountId);
     _updateAccountBalance(accountId, newBalance);
     
     setState(() {
@@ -52,8 +52,8 @@ class _AccountState extends State<Account> {
     Navigator.of(context).pop();
   }
 
-  Future<void> _insertTransaction(double amount, String category, String date, int account_id) async {
-    await DatabaseHelper.instance.insertTransaction(amount, category, date, account_id);
+  Future<void> _insertTransaction(double amount, String category, String date,bool isExpense ,int accountId) async {
+    await DatabaseHelper.instance.insertTransaction(amount, category, date, isExpense ,accountId);
   }
 
   Future<void> _updateAccountBalance(int accountId, double newBalance) async {
@@ -68,8 +68,8 @@ class _AccountState extends State<Account> {
     });
   }
 
-  Future<void> _deleteTransaction(int transactionId, double transactionAmount) async {
-    double newBalance = _isPositive 
+  Future<void> _deleteTransaction(int transactionId, double transactionAmount, bool isExpense) async {
+    double newBalance = isExpense 
       ? currentBalance + transactionAmount
       : currentBalance - transactionAmount;
 
@@ -115,7 +115,9 @@ class _AccountState extends State<Account> {
                         IconButton(
                           onPressed: (){
                             transactionAmount = transactions[index]['amount'];
-                            _deleteTransaction(transactions[index]['id'], transactionAmount);
+                            bool isExpense = transactions[index]['isExpense'] == 1;
+                            
+                            _deleteTransaction(transactions[index]['id'], transactionAmount, isExpense);
                           }, 
                           icon: Icon(Icons.delete)),
                         IconButton(
