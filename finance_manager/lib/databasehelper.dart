@@ -41,7 +41,7 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
           CREATE TABLE $table (
-            $columnId INTEGER PRIMARY KEY,
+            $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
             $columnName TEXT NOT NULL,
             $columnBalance REAL NOT NULL,
             $columnType TEXT NOT NULL
@@ -50,6 +50,7 @@ class DatabaseHelper {
     
     await db.execute('''
           CREATE TABLE $table2 (
+            $columnId_2 INTEGER PRIMARY KEY AUTOINCREMENT,
             $columnAmount REAL NOT NULL,
             $columnCategory TEXT NOT NULL,
             $columnDate TEXT NOT NULL,
