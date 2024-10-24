@@ -64,6 +64,11 @@ class _AccountState extends State<Account> {
     });
   }
 
+  Future<void> _deleteTransaction(int transactionId) async {
+    await DatabaseHelper.instance.deleteTransaction(transactionId);
+    _getTransactions();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,8 +88,13 @@ class _AccountState extends State<Account> {
                     subtitle: Row(children: [
                       Text(transactions[index]['category']),
                       SizedBox(width: 30),
-                      Text(transactions[index]['date'])
+                      Text(transactions[index]['date']),
                     ],),
+                    trailing: IconButton(
+                      onPressed: (){
+                        _deleteTransaction(transactions[index]['id']);
+                      }, 
+                      icon: Icon(Icons.delete)),
                   );
                 })
             )
