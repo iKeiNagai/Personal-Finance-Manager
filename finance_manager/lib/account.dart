@@ -65,7 +65,7 @@ class _AccountState extends State<Account> {
     int accountId = widget.account['_id'];
     final data = await DatabaseHelper.instance.queryAllRowsTransaction(accountId);
     setState(() {
-      transactions = data;
+      transactions = data.reversed.toList();
     });
   }
 

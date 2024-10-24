@@ -63,29 +63,28 @@ class _HomeState extends State<Home> {
             Expanded(
               child: ListView(
                 children: <Widget>[
-                  ...accounts.map((account) => Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Account(account: account, onUpdate: _getAccounts)),
-                                );
-                              },
-                              child: Text(
-                                '${account[DatabaseHelper.columnName]}: ${account[DatabaseHelper.columnBalance]} (${account[DatabaseHelper.columnType]})',
-                              )
-                            ),
-                      ),
-                      FloatingActionButton(
-                        onPressed: (){
-                          _deleteAccount(account[DatabaseHelper.columnId]);
+                  ...accounts.map((account) => ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    Account(account: account, onUpdate: _getAccounts)),
+                          );
                         },
-                        child: Icon(Icons.delete),)
-                    ],
-                  )),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${account[DatabaseHelper.columnName]}: ${account[DatabaseHelper.columnBalance]} (${account[DatabaseHelper.columnType]})',
+                            ),
+                            IconButton(
+                              onPressed: (){
+                                _deleteAccount(account[DatabaseHelper.columnId]);
+                              },
+                              icon: Icon(Icons.delete))
+                          ],
+                        )
+                      )),
                   ElevatedButton(
                       onPressed: () {
                         showDialog(
