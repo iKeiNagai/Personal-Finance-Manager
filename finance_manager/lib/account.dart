@@ -17,6 +17,7 @@ class _AccountState extends State<Account> {
   TextEditingController _dateController = TextEditingController();
   bool _isPositive = true;
   late double currentBalance;
+  late double transactionAmount;
 
   @override
   void initState(){
@@ -64,8 +65,19 @@ class _AccountState extends State<Account> {
     });
   }
 
-  Future<void> _deleteTransaction(int transactionId) async {
+  Future<void> _deleteTransaction(int transactionId, double transactionAmount) async {
+    double newBalance = _isPositive 
+      ? currentBalance + transactionAmount
+      : currentBalance - transactionAmount;
+
     await DatabaseHelper.instance.deleteTransaction(transactionId);
+    _updateAccountBalance(widget.account['_id'], newBalance);
+
+    setState(() {
+      currentBalance =  newBalance;
+    });
+
+    widget.onUpdate();
     _getTransactions();
   }
 
@@ -92,7 +104,8 @@ class _AccountState extends State<Account> {
                     ],),
                     trailing: IconButton(
                       onPressed: (){
-                        _deleteTransaction(transactions[index]['id']);
+                        transactionAmount = transactions[index]['amount'];
+                        _deleteTransaction(transactions[index]['id'], transactionAmount);
                       }, 
                       icon: Icon(Icons.delete)),
                   );
