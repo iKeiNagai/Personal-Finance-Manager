@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    Account(account: account)),
+                                    Account(account: account, onUpdate: _getAccounts)),
                           );
                         },
                         child: Text(

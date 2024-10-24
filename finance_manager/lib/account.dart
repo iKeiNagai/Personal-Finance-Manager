@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class Account extends StatefulWidget {
   final Map<String, dynamic> account;
-  Account({required this.account});
+  final VoidCallback onUpdate;
+  Account({required this.account, required this.onUpdate});
 
   @override
   State<Account> createState() => _AccountState();
@@ -37,12 +38,13 @@ class _AccountState extends State<Account> {
 
     _insertTransaction(amount, category, date, accountId);
     _updateAccountBalance(accountId, newBalance);
-
+    
     setState(() {
       currentBalance = newBalance;
     });
-
+    widget.onUpdate();
     _getTransactions();
+
     Navigator.of(context).pop();
   }
 
