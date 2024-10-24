@@ -44,6 +44,9 @@ class _AccountState extends State<Account> {
       currentBalance = newBalance;
     });
     widget.onUpdate();
+    _amounttController.clear();
+    _categoryController.clear();
+    _dateController.clear();
     _getTransactions();
 
     Navigator.of(context).pop();
@@ -81,6 +84,10 @@ class _AccountState extends State<Account> {
     _getTransactions();
   }
 
+  Future<void> _updateTransaction(int transactionId, double newAmount, String newCategory, String newDate) async {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,12 +109,67 @@ class _AccountState extends State<Account> {
                       SizedBox(width: 30),
                       Text(transactions[index]['date']),
                     ],),
-                    trailing: IconButton(
-                      onPressed: (){
-                        transactionAmount = transactions[index]['amount'];
-                        _deleteTransaction(transactions[index]['id'], transactionAmount);
-                      }, 
-                      icon: Icon(Icons.delete)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: (){
+                            transactionAmount = transactions[index]['amount'];
+                            _deleteTransaction(transactions[index]['id'], transactionAmount);
+                          }, 
+                          icon: Icon(Icons.delete)),
+                        IconButton(
+                          onPressed: (){
+                            showDialog(
+                              context: context, 
+                              builder: (_) => AlertDialog(
+                                title: Text('Update transaction'),
+                                content: StatefulBuilder(
+                                  builder: (BuildContext context, StateSetter setState){
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        TextField(
+                                          controller: _amounttController,
+                                          decoration: InputDecoration(hintText:'New Amount'),
+                                        ),
+                                        SizedBox(height: 20),
+                                        TextField(
+                                          controller: _categoryController,
+                                          decoration: InputDecoration(hintText: 'New Category'),
+                                        ),
+                                        SizedBox(height:20),
+                                        TextField(
+                                          controller: _dateController,
+                                          decoration: InputDecoration(hintText: 'New Date: YYYY-MM-DD'),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(_isPositive ? 'Subtract' : 'Add'),
+                                            Switch(
+                                              value: _isPositive, 
+                                              onChanged: (value){
+                                                setState((){
+                                                  _isPositive = value;
+                                                });
+                                              }),
+                                          ],
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: (){
+                                            
+                                          }, 
+                                          child: Text('Save')),
+                                        Text(_isPositive.toString())
+                                      ],
+                                    );
+                                  }),
+                              ));
+                          }, 
+                          icon: Icon(Icons.update))
+                      ],
+                    ),
                   );
                 })
             )
