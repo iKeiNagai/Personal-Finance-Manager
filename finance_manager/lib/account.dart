@@ -1,5 +1,6 @@
 import 'package:finance_manager/databasehelper.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Account extends StatefulWidget {
   final Map<String, dynamic> account;
@@ -83,9 +84,32 @@ class _AccountState extends State<Account> {
     widget.onUpdate();
     _getTransactions();
   }
+  
+  Future<void> _updateTransaction(int transactionId, double newAmount, String newCategory, String newDate, bool isExpense) async {
+    var transaction = transactions.firstWhere((t) => t['id'] == transactionId);
+    double oldAmount = transaction['amount'];
+    bool wasExpense = transaction['isExpense'] == 1;
 
-  Future<void> _updateTransaction(int transactionId, double newAmount, String newCategory, String newDate) async {
+    double newBalance = wasExpense
+      ? currentBalance + oldAmount
+      : currentBalance - oldAmount;
 
+    await DatabaseHelper.instance.updateTransaction(transactionId, newAmount, newCategory, newDate, isExpense);
+    
+    newBalance = isExpense 
+        ? newBalance - newAmount 
+        : newBalance + newAmount;
+    _updateAccountBalance(widget.account['_id'], newBalance);
+  
+    setState(() {
+      currentBalance = newBalance;
+    });
+
+    widget.onUpdate();
+    _getTransactions();
+    _amounttController.clear();
+    _categoryController.clear();
+    _dateController.clear();
   }
 
   @override
@@ -122,6 +146,10 @@ class _AccountState extends State<Account> {
                           icon: Icon(Icons.delete)),
                         IconButton(
                           onPressed: (){
+                            _amounttController.text = transactions[index]['amount'].toString();
+                            _categoryController.text = transactions[index]['category'];
+                            _dateController.text = transactions[index]['date'];
+
                             showDialog(
                               context: context, 
                               builder: (_) => AlertDialog(
@@ -160,7 +188,12 @@ class _AccountState extends State<Account> {
                                         ),
                                         ElevatedButton(
                                           onPressed: (){
-                                            
+                                            double newAmount = double.tryParse(_amounttController.text) ?? 0;
+                                            String newCategory = _categoryController.text;
+                                            String newDate = _dateController.text;
+
+                                            _updateTransaction(transactions[index]['id'], newAmount, newCategory, newDate, _isPositive);
+                                            Navigator.of(context).pop();
                                           }, 
                                           child: Text('Save')),
                                         Text(_isPositive.toString())

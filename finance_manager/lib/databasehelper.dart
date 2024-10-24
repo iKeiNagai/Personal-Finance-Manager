@@ -107,6 +107,20 @@ class DatabaseHelper {
     );
 
   }
+
+  Future<int> updateTransaction(int transactionId, double newAmount, String newCategory, String newDate, bool isExpense) async {
+    Database db = await instance.database;
+
+    return await db.update(table2,{
+      columnAmount : newAmount,
+      columnCategory : newCategory,
+      columnDate : newDate,
+      columnExpense :isExpense
+    },
+    where: '$columnId_2 = ?',
+    whereArgs: [transactionId]);
+  }
+
   // Update an account
   Future<int> update(Map<String, dynamic> row) async {
     Database db = await instance.database;
