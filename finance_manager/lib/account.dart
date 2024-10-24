@@ -15,19 +15,33 @@ class _AccountState extends State<Account> {
   TextEditingController _categoryController = TextEditingController();
   TextEditingController _dateController = TextEditingController();
   bool _isPositive = true;
+  late double currentBalance;
 
   @override
   void initState(){
     super.initState();
+    currentBalance = widget.account['balance'];
     _getTransactions();
   }
-  void addTransaction(){
+
+  void addTransaction(bool isPositive){
     double? amount = double.tryParse(_amounttController.text);
     String category = _categoryController.text;
     String date = _dateController.text;
     int accountId = widget.account['_id'];
 
-    _insertTransaction(amount!, category, date, accountId);
+    double newBalance = isPositive
+      ? currentBalance - amount!
+      : currentBalance + amount!;
+
+
+    _insertTransaction(amount, category, date, accountId);
+    _updateAccountBalance(accountId, newBalance);
+
+    setState(() {
+      currentBalance = newBalance;
+    });
+
     _getTransactions();
     Navigator.of(context).pop();
   }
@@ -36,11 +50,15 @@ class _AccountState extends State<Account> {
     await DatabaseHelper.instance.insertTransaction(amount, category, date, account_id);
   }
 
+  Future<void> _updateAccountBalance(int accountId, double newBalance) async {
+    await DatabaseHelper.instance.updateAccountBalance(accountId, newBalance);
+  }
+
   Future<void> _getTransactions() async {
     int accountId = widget.account['_id'];
     final data = await DatabaseHelper.instance.queryAllRowsTransaction(accountId);
     setState(() {
-      transactions = data; 
+      transactions = data;
     });
   }
 
@@ -53,7 +71,7 @@ class _AccountState extends State<Account> {
       body: Center(
         child: Column(
           children: <Widget>[
-            Text(widget.account['balance'].toString()),
+            Text(currentBalance.toString()),
             Expanded(
               child: ListView.builder(
                 itemCount: transactions.length,
@@ -99,7 +117,7 @@ class _AccountState extends State<Account> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(_isPositive ? '-' : '+'),
+                              Text(_isPositive ? 'Subtract' : 'Add'),
                               Switch(
                                 value: _isPositive, 
                                 onChanged: (value){
@@ -111,9 +129,10 @@ class _AccountState extends State<Account> {
                           ),
                           ElevatedButton(
                             onPressed: (){
-                              addTransaction();
+                              addTransaction(_isPositive);
                             }, 
-                            child: Text('Save'))
+                            child: Text('Save')),
+                          Text(_isPositive.toString())
                         ],
                       );
                     }),
@@ -121,5 +140,6 @@ class _AccountState extends State<Account> {
         },
         child: Icon(Icons.add)),
     );
+    
   }
 }

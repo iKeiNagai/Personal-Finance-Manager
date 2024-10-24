@@ -93,6 +93,16 @@ class DatabaseHelper {
     return await db.query(table);
   }
 
+  Future<int> updateAccountBalance(int accountId, double newBalance) async {
+    Database db = await instance.database;
+    return await db.update(table,{
+      columnBalance : newBalance
+    },
+    where: '$columnId = ?',
+    whereArgs: [accountId]
+    );
+
+  }
   // Update an account
   Future<int> update(Map<String, dynamic> row) async {
     Database db = await instance.database;
