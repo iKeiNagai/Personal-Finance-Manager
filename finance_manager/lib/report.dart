@@ -12,23 +12,45 @@ class Report extends StatefulWidget {
 
 class _reportState extends State<Report> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int _selectedIndex = 0;
+
+  static const backgroundColor = Color(0xFF282A36);
+  static const surfaceColor = Color(0xFF44475A);
+  static const primaryColor = Color(0xFF50FA7B);
+  static const accentColor = Color(0xFFFF79C6);
+  static const textColor = Colors.white;
+  static const secondaryTextColor = Colors.white54;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _selectedIndex = _tabController.index;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text('Report'),
+        backgroundColor: surfaceColor,
+        title: Text('Report',
+        style: TextStyle(color: textColor, fontFamily: 'Gayathri'),),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: 'Monthly'),
-            Tab(text: 'Yearly')
+            Tab(child: Text('Monthly',
+              style: TextStyle(
+                color: _selectedIndex == 0 ? primaryColor : textColor
+              )),),
+            Tab(child: Text('Yearly',
+              style: TextStyle(
+                color: _selectedIndex == 1 ? primaryColor : textColor
+              )),)
           ],),
       ),
       body: TabBarView(
@@ -78,17 +100,61 @@ class MonthlyReport extends StatelessWidget {
                 ? (reportData[index + 1]['total_income'] as num).toDouble()
                 : 0.0;
 
-            return ListTile(
-              title: Text('Month: $formattedMonthYear'),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Total Expenses: \$${totalExpenses.toStringAsFixed(2)}'),
-                  Text('Previous Month: \$${previousExpenses.toStringAsFixed(2)}'),
-                  SizedBox(height: 20),
-                  Text('Total Income: \$${totalIncome.toStringAsFixed(2)}'),
-                  Text('Previous Month: \$${previousIncome.toStringAsFixed(2)}')
-                ],
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF44475A),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Text(
+                      formattedMonthYear,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Total Expenses: \$${totalExpenses.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      'Previous Month: \$${previousExpenses.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Total Income: \$${totalIncome.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      'Previous Month: \$${previousIncome.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -121,14 +187,45 @@ class YearlyReport extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = reportData[index];
 
-            return ListTile(
-              title: Text('Year: ${item['year']}'),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Total Expenses: \$${item['total_expenses'].toStringAsFixed(2)}'),
-                  Text('Total Income: \$${item['total_income'].toStringAsFixed(2)}'),
-                ],
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal:16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF44475A),
+                  borderRadius: BorderRadius.circular(12)
+                ),
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Text(
+                      'Year: ${item['year']}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Total Expenses: \$${item['total_expenses'].toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Total Income: \$${item['total_income'].toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             );
           },
