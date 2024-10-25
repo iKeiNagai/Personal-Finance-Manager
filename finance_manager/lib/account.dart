@@ -33,6 +33,13 @@ class _AccountState extends State<Account> {
     String date = _dateController.text;
     int accountId = widget.account['_id'];
 
+    if (!_isValidDate(date)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a valid date in YYYY-MM-DD format.')),
+      );
+      return; 
+    }
+
     double newBalance = isExpense
       ? currentBalance - amount!
       : currentBalance + amount!;
@@ -111,6 +118,11 @@ class _AccountState extends State<Account> {
     _categoryController.clear();
     _dateController.clear();
   }
+
+  bool _isValidDate(String date) {
+    DateTime? parsedDate = DateTime.tryParse(date);
+    return parsedDate != null;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +208,6 @@ class _AccountState extends State<Account> {
                                             Navigator.of(context).pop();
                                           }, 
                                           child: Text('Save')),
-                                        Text(_isPositive.toString())
                                       ],
                                     );
                                   }),
