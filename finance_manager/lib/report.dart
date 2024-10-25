@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'databasehelper.dart';
 
@@ -15,7 +16,7 @@ class _reportState extends State<Report> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -62,6 +63,11 @@ class MonthlyReport extends StatelessWidget {
           itemCount: reportData.length,
           itemBuilder: (context, index) {
             final item = reportData[index];
+
+            String isMonth = item['month'];
+            DateTime monthString = DateTime.parse("$isMonth-01");
+            String formattedMonthYear = DateFormat('MMMM, yyyy').format(monthString);
+
             double totalExpenses = (item['total_expenses'] as num).toDouble();
             double totalIncome = (item['total_income'] as num).toDouble();
 
@@ -73,7 +79,7 @@ class MonthlyReport extends StatelessWidget {
                 : 0.0;
 
             return ListTile(
-              title: Text('Month: ${item['month']}'),
+              title: Text('Month: $formattedMonthYear'),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
