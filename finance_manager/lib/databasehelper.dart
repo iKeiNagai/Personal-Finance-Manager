@@ -22,6 +22,19 @@ class DatabaseHelper {
   static final columnExpense = 'isExpense';
   static final foreignKey = 'account_id';
 
+  // New table for stocks
+  static final stocksTable = 'stocks';
+
+  // Columns for stocks table
+  static final columnStockId = 'stock_id';
+  static final columnTicker = 'ticker';
+  static final columnQuantity = 'quantity';
+  static final columnPurchasePrice = 'purchase_price';
+  static final columnPurchaseDate = 'purchase_date';
+  static final columnCurrentPrice = 'current_price';
+
+  static const String tableStockPositions = 'stock_positions';
+
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
@@ -60,9 +73,81 @@ class DatabaseHelper {
             FOREIGN KEY ($foreignKey) REFERENCES $table($columnId) ON DELETE CASCADE
           )
           ''');
+    await db.execute('''
+      CREATE TABLE $stocksTable (
+        $columnStockId INTEGER PRIMARY KEY AUTOINCREMENT,
+        $columnTicker TEXT NOT NULL,
+        $columnQuantity REAL NOT NULL,
+        $columnPurchasePrice REAL NOT NULL,
+        $columnPurchaseDate TEXT NOT NULL,
+        $columnCurrentPrice REAL
+      )
+    ''');
   }
 
-  Future<int> insertTransaction(double? amount, String category, String date,bool isExpense,int accountId) async {
+  // Insert new stock position
+  Future<int> insertStock(String ticker, double quantity, double purchasePrice) async {
+    Database db = await instance.database;
+    return await db.insert(stocksTable, {
+      columnTicker: ticker,
+      columnQuantity: quantity,
+      columnPurchasePrice: purchasePrice,
+      columnPurchaseDate: DateTime.now().toString(),
+      columnCurrentPrice: purchasePrice, // Initial current price
+    });
+  }
+
+
+  // Retrieve all stocks
+  Future<List<Map<String, dynamic>>> queryAllStocks() async {
+    Database db = await instance.database;
+    return await db.query(stocksTable);
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllStockPositions() async {
+    final db = await database;
+    final result = await db.query(DatabaseHelper.tableStockPositions);
+    return result.map((row) => Map<String, dynamic>.from(row)).toList();
+  }
+
+  Future<int> deleteStockPosition(int id) async {
+    final db = await database;
+    return await db.delete(
+      DatabaseHelper.tableStockPositions,
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
+  // Update stock
+  Future<int> updateStock(int stockId, double newQuantity, double newPurchasePrice,) async {
+    Database db = await instance.database;
+    return await db.update(stocksTable, {
+      columnQuantity: newQuantity,
+      columnPurchasePrice: newPurchasePrice,
+
+    }, where: '$columnStockId = ?', whereArgs: [stockId]);
+  }
+
+  // Delete stock
+  Future<int> deleteStock(int stockId) async {
+    Database db = await instance.database;
+    return await db.delete(stocksTable, where: '$columnStockId = ?', whereArgs: [stockId]);
+  }
+
+  // Future<void> preloadDatabase() async {
+  //   Database db = await instance.database;
+  //   await db.insert(stocksTable, {
+  //     columnTicker: 'TQQQ',
+  //     columnQuantity: 110.0,
+  //     columnPurchasePrice: 62.0,
+  //     columnPurchaseDate: DateTime.now().toString(),
+  //     columnCurrentPrice: 62.0,
+  //   });
+  // }
+
+
+    Future<int> insertTransaction(double? amount, String category, String date,bool isExpense,int accountId) async {
     Database db = await instance.database;
     return await db.insert(table2,{
       columnAmount: amount,
