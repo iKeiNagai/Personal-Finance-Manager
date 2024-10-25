@@ -15,7 +15,7 @@ class _reportState extends State<Report> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -33,7 +33,8 @@ class _reportState extends State<Report> with SingleTickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: [
-          MonthlyReport()
+          MonthlyReport(),
+          YearlyReport()
         ]),
     );
   }
@@ -43,7 +44,7 @@ class MonthlyReport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: DatabaseHelper.instance.getMonthlyReport(), // Fetch monthly data
+      future: DatabaseHelper.instance.getMonthlyReport(), 
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -81,6 +82,46 @@ class MonthlyReport extends StatelessWidget {
                   SizedBox(height: 20),
                   Text('Total Income: \$${totalIncome.toStringAsFixed(2)}'),
                   Text('Previous Month: \$${previousIncome.toStringAsFixed(2)}')
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class YearlyReport extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: DatabaseHelper.instance.getYearlyReport(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final reportData = snapshot.data ?? [];
+        if (reportData.isEmpty) {
+          return Center(child: Text('No data available.'));
+        }
+
+        return ListView.builder(
+          itemCount: reportData.length,
+          itemBuilder: (context, index) {
+            final item = reportData[index];
+
+            return ListTile(
+              title: Text('Year: ${item['year']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Total Expenses: \$${item['total_expenses'].toStringAsFixed(2)}'),
+                  Text('Total Income: \$${item['total_income'].toStringAsFixed(2)}'),
                 ],
               ),
             );

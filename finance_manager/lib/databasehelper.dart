@@ -240,5 +240,21 @@ class DatabaseHelper {
     ''');
   }
 
-  
+  Future<List<Map<String, dynamic>>> getYearlyReport() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT 
+        strftime('%Y', $columnDate) AS year,
+        SUM(CASE WHEN $columnExpense = 1 THEN $columnAmount ELSE 0 END) AS total_expenses,
+        SUM(CASE WHEN $columnExpense = 0 THEN $columnAmount ELSE 0 END) AS total_income 
+      FROM 
+        $table2 
+      GROUP BY 
+        year
+      ORDER BY 
+        year DESC
+    ''');
+  }
+
+
 }
