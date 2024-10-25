@@ -38,6 +38,9 @@ dependencies:
   sqflite: ^2.4.0
   path_provider: ^2.1.4
   fl_chart: ^0.69.0
+  yahoo_finance_data_reader: ^1.0.11
+
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
