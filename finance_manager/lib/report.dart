@@ -1,26 +1,93 @@
 import 'package:flutter/material.dart';
 
-class report extends StatefulWidget {
-  const report({super.key});
+import 'databasehelper.dart';
+
+class Report extends StatefulWidget {
+  Report({super.key});
 
   @override
-  State<report> createState() => _reportState();
+  State<Report> createState() => _reportState();
 }
 
-class _reportState extends State<report> {
+class _reportState extends State<Report> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Report'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'Monthly'),
+            Tab(text: 'Yearly')
+          ],),
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Text('Report')
-          ],
-        ),
-      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          MonthlyReport()
+        ]),
     );
   }
 }
+
+class MonthlyReport extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: DatabaseHelper.instance.getMonthlyReport(), // Fetch monthly data
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final reportData = snapshot.data ?? [];
+        if (reportData.isEmpty) {
+          return Center(child: Text('No data available.'));
+        }
+
+        return ListView.builder(
+          itemCount: reportData.length,
+          itemBuilder: (context, index) {
+            final item = reportData[index];
+            double totalExpenses = (item['total_expenses'] as num).toDouble();
+            double totalIncome = (item['total_income'] as num).toDouble();
+
+            double previousExpenses = index < reportData.length - 1
+                ? (reportData[index + 1]['total_expenses'] as num).toDouble()
+                : 0.0;
+            double previousIncome = index < reportData.length - 1
+                ? (reportData[index + 1]['total_income'] as num).toDouble()
+                : 0.0;
+
+            return ListTile(
+              title: Text('Month: ${item['month']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Total Expenses: \$${totalExpenses.toStringAsFixed(2)}'),
+                  Text('Previous Month: \$${previousExpenses.toStringAsFixed(2)}'),
+                  SizedBox(height: 20),
+                  Text('Total Income: \$${totalIncome.toStringAsFixed(2)}'),
+                  Text('Previous Month: \$${previousIncome.toStringAsFixed(2)}')
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+

@@ -223,4 +223,22 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(table2, where: '$columnId_2 = ?', whereArgs: [id]);
   }
+
+  Future<List<Map<String, dynamic>>> getMonthlyReport() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT 
+        strftime('%Y-%m', $columnDate) AS month,
+        SUM(CASE WHEN $columnExpense = 1 THEN $columnAmount ELSE 0 END) AS total_expenses,
+        SUM(CASE WHEN $columnExpense = 0 THEN $columnAmount ELSE 0 END) AS total_income 
+      FROM 
+        $table2 
+      GROUP BY 
+        month
+      ORDER BY 
+        month DESC
+    ''');
+  }
+
+  
 }
