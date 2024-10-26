@@ -124,7 +124,7 @@ class MonthlyReport extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Total Expenses: \$${totalExpenses.toStringAsFixed(2)}',
+                      'Total Expenses: \$${NumberFormat("#,##0.00").format(totalExpenses)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -133,7 +133,7 @@ class MonthlyReport extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      'Previous Month: \$${previousExpenses.toStringAsFixed(2)}',
+                      'Previous Month: \$${NumberFormat("#,##0.00").format(previousExpenses)}',
                       style: const TextStyle(
                         color: Colors.white54,
                         fontSize: 14,
@@ -143,7 +143,7 @@ class MonthlyReport extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Total Income: \$${totalIncome.toStringAsFixed(2)}',
+                      'Total Income: \$${NumberFormat("#,##0.00").format(totalIncome)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -152,7 +152,7 @@ class MonthlyReport extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      'Previous Month: \$${previousIncome.toStringAsFixed(2)}',
+                      'Previous Month: \$${NumberFormat("#,##0.00").format(previousIncome)}',
                       style: const TextStyle(
                         color: Colors.white54,
                         fontSize: 14,
@@ -216,7 +216,7 @@ class YearlyReport extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Total Expenses: \$${item['total_expenses'].toStringAsFixed(2)}',
+                      'Total Expenses: \$${NumberFormat("#,##0.00").format(item['total_expenses'])}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -226,7 +226,7 @@ class YearlyReport extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Total Income: \$${item['total_income'].toStringAsFixed(2)}',
+                      'Total Income: \$${NumberFormat("#,##0.00").format(item['total_income'])}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,

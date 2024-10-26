@@ -1,6 +1,7 @@
 import 'package:finance_manager/databasehelper.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:intl/intl.dart';
 
 class Account extends StatefulWidget {
   final Map<String, dynamic> account;
@@ -122,7 +123,7 @@ class _AccountState extends State<Account> {
   bool _isValidDate(String date) {
     DateTime? parsedDate = DateTime.tryParse(date);
     return parsedDate != null;
-}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +147,7 @@ class _AccountState extends State<Account> {
                   color: Colors.white60,
                   fontFamily: 'Gayathri'
                 )),
-            Text(currentBalance.toStringAsFixed(2),
+            Text(NumberFormat("#,##0.00").format(currentBalance),
                 style: const TextStyle(
                   fontSize: 30,
                   color: Colors.white,
@@ -164,7 +165,7 @@ class _AccountState extends State<Account> {
                       borderRadius: BorderRadius.circular(12)
                     ),
                     child: ListTile(
-                      title: Text(transactions[index]['amount'].toStringAsFixed(2),
+                      title: Text(NumberFormat("#,##0.00").format(transactions[index]['amount']),
                               style: const TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
