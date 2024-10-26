@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'databasehelper.dart';
 
 class Report extends StatefulWidget {
-  Report({super.key});
+  const Report({super.key});
 
   @override
   State<Report> createState() => _reportState();
@@ -17,9 +17,7 @@ class _reportState extends State<Report> with SingleTickerProviderStateMixin {
   static const backgroundColor = Color(0xFF282A36);
   static const surfaceColor = Color(0xFF44475A);
   static const primaryColor = Color(0xFF50FA7B);
-  static const accentColor = Color(0xFFFF79C6);
   static const textColor = Colors.white;
-  static const secondaryTextColor = Colors.white54;
 
   @override
   void initState() {
@@ -38,18 +36,20 @@ class _reportState extends State<Report> with SingleTickerProviderStateMixin {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: surfaceColor,
-        title: Text('Report',
+        title: const Text('Report',
         style: TextStyle(color: textColor, fontFamily: 'Gayathri'),),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
             Tab(child: Text('Monthly',
               style: TextStyle(
-                color: _selectedIndex == 0 ? primaryColor : textColor
+                color: _selectedIndex == 0 ? primaryColor : textColor,
+                fontFamily: 'Gayathri'
               )),),
             Tab(child: Text('Yearly',
               style: TextStyle(
-                color: _selectedIndex == 1 ? primaryColor : textColor
+                color: _selectedIndex == 1 ? primaryColor : textColor,
+                fontFamily: 'Gayathri'
               )),)
           ],),
       ),
@@ -64,13 +64,15 @@ class _reportState extends State<Report> with SingleTickerProviderStateMixin {
 }
 
 class MonthlyReport extends StatelessWidget {
+  const MonthlyReport({super.key});
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: DatabaseHelper.instance.getMonthlyReport(), 
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -78,7 +80,7 @@ class MonthlyReport extends StatelessWidget {
 
         final reportData = snapshot.data ?? [];
         if (reportData.isEmpty) {
-          return Center(child: Text('No data available.'));
+          return const Center(child: Text('No data available.'));
         }
 
         return ListView.builder(
@@ -104,52 +106,57 @@ class MonthlyReport extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color(0xFF44475A),
+                  color: const Color(0xFF44475A),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     Text(
                       formattedMonthYear,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Total Expenses: \$${totalExpenses.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),
                     Text(
                       'Previous Month: \$${previousExpenses.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white54,
                         fontSize: 14,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Text(
                       'Total Income: \$${totalIncome.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),
                     Text(
                       'Previous Month: \$${previousIncome.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white54,
                         fontSize: 14,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -171,7 +178,7 @@ class YearlyReport extends StatelessWidget {
       future: DatabaseHelper.instance.getYearlyReport(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -179,7 +186,7 @@ class YearlyReport extends StatelessWidget {
 
         final reportData = snapshot.data ?? [];
         if (reportData.isEmpty) {
-          return Center(child: Text('No data available.'));
+          return const Center(child: Text('No data available.'));
         }
 
         return ListView.builder(
@@ -191,36 +198,39 @@ class YearlyReport extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal:16),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color(0xFF44475A),
+                  color: const Color(0xFF44475A),
                   borderRadius: BorderRadius.circular(12)
                 ),
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     Text(
                       'Year: ${item['year']}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Total Expenses: \$${item['total_expenses'].toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Total Income: \$${item['total_income'].toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
+                        fontFamily: 'Gayathri'
                       ),
                       textAlign: TextAlign.center,
                     ),

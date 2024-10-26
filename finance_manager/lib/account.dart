@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 class Account extends StatefulWidget {
   final Map<String, dynamic> account;
   final VoidCallback onUpdate;
-  Account({required this.account, required this.onUpdate});
+  const Account({super.key, required this.account, required this.onUpdate});
 
   @override
   State<Account> createState() => _AccountState();
@@ -13,9 +13,9 @@ class Account extends StatefulWidget {
 
 class _AccountState extends State<Account> {
   List<Map<String, dynamic>> transactions =[];
-  TextEditingController _amounttController = TextEditingController();
-  TextEditingController _categoryController = TextEditingController();
-  TextEditingController _dateController = TextEditingController();
+  final TextEditingController _amounttController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   bool _isPositive = true;
   late double currentBalance;
   late double transactionAmount;
@@ -35,7 +35,7 @@ class _AccountState extends State<Account> {
 
     if (!_isValidDate(date)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a valid date in YYYY-MM-DD format.')),
+        const SnackBar(content: Text('Please enter a valid date in YYYY-MM-DD format.')),
       );
       return; 
     }
@@ -127,94 +127,176 @@ class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF282A36),
       appBar: AppBar(
-        title: Text('Account'),
+        backgroundColor:  const Color(0xFF44475A),
+        title: const Text('Account',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Gayathri',
+            ),),
       ),
       body: Center(
         child: Column(
           children: <Widget>[
-            Text(currentBalance.toString()),
+            const SizedBox(height: 30),
+            const Text('Current Balance',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white60,
+                  fontFamily: 'Gayathri'
+                )),
+            Text(currentBalance.toStringAsFixed(2),
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontFamily: 'Gayathri'
+                )),
+            const SizedBox(height: 30),
             Expanded(
               child: ListView.builder(
                 itemCount: transactions.length,
                 itemBuilder: (context, index){
-                  return ListTile(
-                    title: Text(transactions[index]['amount'].toString()),
-                    subtitle: Row(children: [
-                      Text(transactions[index]['category']),
-                      SizedBox(width: 30),
-                      Text(transactions[index]['date']),
-                    ],),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: (){
-                            transactionAmount = transactions[index]['amount'];
-                            bool isExpense = transactions[index]['isExpense'] == 1;
-                            
-                            _deleteTransaction(transactions[index]['id'], transactionAmount, isExpense);
-                          }, 
-                          icon: Icon(Icons.delete)),
-                        IconButton(
-                          onPressed: (){
-                            _amounttController.text = transactions[index]['amount'].toString();
-                            _categoryController.text = transactions[index]['category'];
-                            _dateController.text = transactions[index]['date'];
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF44475A),
+                      borderRadius: BorderRadius.circular(12)
+                    ),
+                    child: ListTile(
+                      title: Text(transactions[index]['amount'].toStringAsFixed(2),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Gayathri'
 
-                            showDialog(
-                              context: context, 
-                              builder: (_) => AlertDialog(
-                                title: Text('Update transaction'),
-                                content: StatefulBuilder(
-                                  builder: (BuildContext context, StateSetter setState){
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        TextField(
-                                          controller: _amounttController,
-                                          decoration: InputDecoration(hintText:'New Amount'),
-                                        ),
-                                        SizedBox(height: 20),
-                                        TextField(
-                                          controller: _categoryController,
-                                          decoration: InputDecoration(hintText: 'New Category'),
-                                        ),
-                                        SizedBox(height:20),
-                                        TextField(
-                                          controller: _dateController,
-                                          decoration: InputDecoration(hintText: 'New Date: YYYY-MM-DD'),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(_isPositive ? 'Subtract' : 'Add'),
-                                            Switch(
-                                              value: _isPositive, 
-                                              onChanged: (value){
-                                                setState((){
-                                                  _isPositive = value;
-                                                });
-                                              }),
-                                          ],
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: (){
-                                            double newAmount = double.tryParse(_amounttController.text) ?? 0;
-                                            String newCategory = _categoryController.text;
-                                            String newDate = _dateController.text;
-
-                                            _updateTransaction(transactions[index]['id'], newAmount, newCategory, newDate, _isPositive);
-                                            Navigator.of(context).pop();
-                                          }, 
-                                          child: Text('Save')),
-                                      ],
-                                    );
-                                  }),
-                              ));
-                          }, 
-                          icon: Icon(Icons.update))
-                      ],
+                              ),),
+                      subtitle: Row(children: [
+                        Text(transactions[index]['category'],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Gayathri')),
+                        const SizedBox(width: 30),
+                        Text(transactions[index]['date'],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Gayathri')),
+                      ],),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: (){
+                              transactionAmount = transactions[index]['amount'];
+                              bool isExpense = transactions[index]['isExpense'] == 1;
+                              
+                              _deleteTransaction(transactions[index]['id'], transactionAmount, isExpense);
+                            }, 
+                            icon: const Icon(Icons.delete, color: Colors.red,)),
+                          IconButton(
+                            onPressed: (){
+                              _amounttController.text = transactions[index]['amount'].toString();
+                              _categoryController.text = transactions[index]['category'];
+                              _dateController.text = transactions[index]['date'];
+                    
+                              showDialog(
+                                context: context, 
+                                builder: (_) => AlertDialog(
+                                  backgroundColor: const Color(0xFF282A36),
+                                  shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                                  title: const Text('Update transaction',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Gayathri'
+                                          ),),
+                                  content: StatefulBuilder(
+                                    builder: (BuildContext context, StateSetter setState){
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextField(
+                                            controller: _amounttController,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Gayathri'
+                                            ),
+                                            decoration: const InputDecoration(hintText:'New Amount',
+                                                        hintStyle: TextStyle(
+                                                          color: Colors.white54,
+                                                          fontFamily: 'Gayathri'
+                                                        )),
+                                          ),
+                                          const SizedBox(height: 20),
+                                          TextField(
+                                            controller: _categoryController,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Gayathri'
+                                            ),
+                                            decoration: const InputDecoration(hintText: 'New Category',
+                                                        hintStyle: TextStyle(
+                                                          color: Colors.white54,
+                                                          fontFamily: 'Gayathri'
+                                                        )
+                                            ),
+                                          ),
+                                          const SizedBox(height:20),
+                                          TextField(
+                                            controller: _dateController,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Gayathri'
+                                            ),
+                                            decoration: const InputDecoration(hintText: 'New Date: YYYY-MM-DD',
+                                                        hintStyle: TextStyle(
+                                                          color: Colors.white54,
+                                                          fontFamily: 'Gayathri'
+                                                        )
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(_isPositive ? 'Expense' : 'Income',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontFamily:'Gayathri' 
+                                                    ),),
+                                              Switch(
+                                                value: _isPositive, 
+                                                activeColor: const Color(0xFF50FA7B),
+                                                onChanged: (value){
+                                                  setState((){
+                                                    _isPositive = value;
+                                                  });
+                                                }),
+                                            ],
+                                          ),
+                                          TextButton(
+                                            onPressed: (){
+                                              double newAmount = double.tryParse(_amounttController.text) ?? 0;
+                                              String newCategory = _categoryController.text;
+                                              String newDate = _dateController.text;
+                    
+                                              _updateTransaction(transactions[index]['id'], newAmount, newCategory, newDate, _isPositive);
+                                              Navigator.of(context).pop();
+                                            }, 
+                                            child: const Text('Save',
+                                                      style: TextStyle(
+                                                        color: Color(0xFF50FA7B),
+                                                        fontFamily: 'Gayathri'
+                                                          )
+                                                       ,)),
+                                        ],
+                                      );
+                                    }),
+                                ));
+                            }, 
+                            icon: const Icon(Icons.update, color: Color(0xFF50FA7B),))
+                        ],
+                      ),
                     ),
                   );
                 })
@@ -223,11 +305,19 @@ class _AccountState extends State<Account> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF50FA7B),
         onPressed:(){
           showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: Text('Insert Transaction'),
+                  backgroundColor: const Color(0xFF282A36),
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+                  title: const Text('Insert Transaction',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Gayathri',
+                            ),),
                   content: StatefulBuilder(
                     builder: (BuildContext context, StateSetter setState){
                       return Column(
@@ -235,24 +325,53 @@ class _AccountState extends State<Account> {
                         children: [
                           TextField(
                             controller: _amounttController,
-                            decoration: InputDecoration(hintText:'Amount'),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Gayathri'
+                            ),
+                            decoration: const InputDecoration(hintText:'Amount',
+                                        hintStyle: TextStyle(
+                                          color: Colors.white54,
+                                          fontFamily: 'Gayathri',
+                                        )),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           TextField(
                             controller: _categoryController,
-                            decoration: InputDecoration(hintText: 'Category'),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Gayathri'
+                            ),
+                            decoration: const InputDecoration(hintText: 'Category',
+                                        hintStyle: TextStyle(
+                                          color: Colors.white54,
+                                          fontFamily: 'Gayathri',
+                                        )),
                           ),
-                          SizedBox(height:20),
+                          const SizedBox(height:20),
                           TextField(
                             controller: _dateController,
-                            decoration: InputDecoration(hintText: 'Date: YYYY-MM-DD'),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Gayathri'
+                            ),
+                            decoration: const InputDecoration(hintText: 'Date: YYYY-MM-DD',
+                                        hintStyle: TextStyle(
+                                          color: Colors.white54,
+                                          fontFamily: 'Gayathri',
+                                        )),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(_isPositive ? 'Subtract' : 'Add'),
+                              Text(_isPositive ? 'Expense' : 'Income',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Gayathri',
+                                  ),),
                               Switch(
                                 value: _isPositive, 
+                                activeColor: const Color(0xFF50FA7B),
                                 onChanged: (value){
                                   setState((){
                                     _isPositive = value;
@@ -260,18 +379,21 @@ class _AccountState extends State<Account> {
                                 })
                             ],
                           ),
-                          ElevatedButton(
+                          TextButton(
                             onPressed: (){
                               addTransaction(_isPositive);
                             }, 
-                            child: Text('Save')),
-                          Text(_isPositive.toString())
+                            child: const Text('Save',
+                                      style: TextStyle(
+                                        color: Color(0xFF50FA7B),
+                                        fontFamily: 'Gayathri'
+                                      ),)),
                         ],
                       );
                     }),
                 ));
         },
-        child: Icon(Icons.add)),
+        child: const Icon(Icons.add)),
     );
     
   }
