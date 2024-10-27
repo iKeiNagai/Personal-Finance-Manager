@@ -72,7 +72,7 @@ class _HomeState extends State<Home> {
     // TODO: Implement budget status loading from budget.dart
     // This should be implemented based on your budget tracking logic
     setState(() {
-      budgetRemaining = 1234.56; // Example value
+      budgetRemaining = 992.00; // Example value
       isOnBudget = true; // Example value
     });
   }

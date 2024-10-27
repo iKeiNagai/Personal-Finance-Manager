@@ -15,6 +15,7 @@ class BudgetSection {
 class BudgetScreen extends StatefulWidget {
   @override
   _BudgetScreenState createState() => _BudgetScreenState();
+
 }
 
 class _BudgetScreenState extends State<BudgetScreen> {
@@ -36,6 +37,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
         {'name': 'Utilities', 'amount': 100},
       ],
     ),
+    'Food': BudgetSection(
+      name: 'Food',
+      isIncome: false,
+      subsections: [
+        {'name': 'Groceries', 'amount': 200},
+        {'name': 'Resturant', 'amount': 100},
+      ],
+    ),
   };
 
   Map<String, BudgetSection> spentSections = {
@@ -43,7 +52,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
       name: 'Monthly Income',
       isIncome: true,
       subsections: [
-        {'name': 'Paycheck 1', 'amount': 500},
+        {'name': 'Paycheck 1', 'amount': 1000},
+        {'name': 'Paycheck 2', 'amount': 1000},
       ],
     ),
     'Housing': BudgetSection(
@@ -52,6 +62,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
       subsections: [
         {'name': 'Rent', 'amount': 800},
         {'name': 'Utilities', 'amount': 150},
+      ],
+    ),
+    'Food': BudgetSection(
+      name: 'Food',
+      isIncome: false,
+      subsections: [
+        {'name': 'Groceries', 'amount': 28},
+        {'name': 'Resturant', 'amount': 30},
       ],
     ),
   };
