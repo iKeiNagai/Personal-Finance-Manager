@@ -39,6 +39,7 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _deleteAccount(int accountId) async {
+    await DatabaseHelper.instance.deleteAllTransactionsAccount(accountId);
     await DatabaseHelper.instance.delete(accountId);
     _getAccounts();
   }
