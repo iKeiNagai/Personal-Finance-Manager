@@ -287,7 +287,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildAccountCell(Map<String, dynamic> account) {
+  Widget _buildDebitAccountCell(Map<String, dynamic> account) {
     return Card(
       color: surfaceColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -311,28 +311,76 @@ class _HomeState extends State<Home> {
           ),
         ),
         subtitle: Text(
-          NumberFormat("#,##0.00").format(account['balance'] ?? 0.0),
+          '\$${NumberFormat("#,##0.00").format(account['balance'] ?? 0.0)}',
           style: const TextStyle(
             color: textColor,
             fontFamily: 'Gayathri',
             fontSize: 16,
           ),
         ),
-        trailing: const Icon(
-          Icons.chevron_right,
+
+        trailing: IconButton(
+          onPressed: (){
+            _deleteAccount(account[DatabaseHelper.columnId]);
+          },
+          icon: const Icon(Icons.delete, color: Colors.red,),
+          color: textColor,
+        ),
+      ),
+    );
+  }
+  Widget _buildCreditAccountCell(Map<String, dynamic> account) {
+    return Card(
+      color: surfaceColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => Account(
+                account: account,
+                onUpdate: _getAccounts,
+              ),
+            ),
+          );
+        },
+        title: Text(
+          account['name'] as String? ?? 'Unnamed Account',
+          style: const TextStyle(
+            color: textColor,
+            fontFamily: 'Gayathri',
+            fontSize: 18,
+          ),
+        ),
+        subtitle: Text(
+          '\$${NumberFormat("#,##0.00").format(account['balance'] ?? 0.0)}',
+          style: const TextStyle(
+            color: textColor,
+            fontFamily: 'Gayathri',
+            fontSize: 16,
+          ),
+        ),
+
+        trailing: IconButton(
+          onPressed: (){
+            _deleteAccount(account[DatabaseHelper.columnId]);
+          },
+          icon: const Icon(Icons.delete, color: Colors.red,),
           color: textColor,
         ),
       ),
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
-    final debitAccounts = accounts.where((a) => a['type'] == 'DEBIT').toList();
-    final creditAccounts = accounts.where((a) => a['type'] == 'CREDIT').toList();
+    final debitAccounts = accounts.where((a) => a['Type'] == 'DEBIT').toList();
+
+    final creditAccounts = accounts.where((a) => a['Type'] == 'CREDIT').toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text(' '),backgroundColor: backgroundColor),
+      appBar: AppBar(title: Text(' '),backgroundColor: Color(0x00282A36)),
       backgroundColor: backgroundColor,
 
       body: RefreshIndicator(
@@ -349,7 +397,7 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 const Text(
                   'Welcome',
 
@@ -452,14 +500,112 @@ class _HomeState extends State<Home> {
                 ),
                 const SizedBox(height: 24),
 
+
+                // accounts
+
+
+                // add accounts
+
+                ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            backgroundColor: const Color(0xFF282A36),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15)
+                            ),
+                            title: const Text('Insert Account',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Gayathri'
+                              ),),
+                            content: StatefulBuilder(
+                                builder: (BuildContext context, StateSetter setState) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextField(
+                                        controller: _nameController,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Gayathri'
+                                        ),
+                                        decoration: const InputDecoration(hintText:'Account Name',
+                                            hintStyle: TextStyle(
+                                                color: Colors.white54,
+                                                fontFamily: 'Gayathri'
+                                            )),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      TextField(
+                                        controller: _amountController,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Gayathri'
+                                        ),
+                                        decoration: const InputDecoration(hintText: "Balance",
+                                            hintStyle: TextStyle(
+                                                color: Colors.white54,
+                                                fontFamily: 'Gayathri'
+                                            )),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(_isCredit ? 'Credit' : 'Debit',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'Gayathri'
+                                            ),),
+                                          Switch(
+                                              value: _isCredit,
+                                              activeColor: Color(0xFF50FA7B),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _isCredit = value;
+                                                });
+                                              })
+                                        ],
+                                      ),
+                                      TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _addAccount();
+                                            });
+                                          },
+                                          child: const Text('Insert',
+                                              style: TextStyle(
+                                                  color: Color(0xFF50FA7B),
+                                                  fontFamily: 'Gayathri'
+                                              )))
+                                    ],
+                                  );
+                                }
+                            ),
+                          ));
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF44475A),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16)
+                    ),
+                    child: const Text('Insert account',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Gayathri'
+                      ),)),
+
                 // Banking Section
                 _buildSectionTitle('Banking'),
-                ...debitAccounts.map(_buildAccountCell),
+                ...debitAccounts.map(_buildDebitAccountCell),
                 const SizedBox(height: 16),
 
                 // Credit Section
                 _buildSectionTitle('Credit'),
-                ...creditAccounts.map(_buildAccountCell),
+                ...creditAccounts.map(_buildCreditAccountCell),
                 const SizedBox(height: 24),
 
                 // Budget Section
@@ -512,6 +658,8 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
+
+                // Report Section
                 InkWell(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => Report()),
