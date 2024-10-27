@@ -18,4 +18,6 @@ Key Features:
 
 Technologies Used:
 - Flutter
-- Yahoo Finance API 
+- Yahoo Finance API
+
+Presentation Youtube Link: https://youtu.be/2XFZXw4QDKI
