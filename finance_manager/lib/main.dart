@@ -1,40 +1,18 @@
 import 'package:flutter/material.dart';
+import 'home.dart';
+import 'home2.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Finance Manager',
-      home: HomePage(),
+      home: Home(),
     );
   }
 }
-
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal Finance Manager'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, 
-          children: <Widget>[
-            Text(
-              'Insert Personal Finance Manager Here',
-              style: TextStyle(fontSize: 24),
-            ),
-          ],
-        ),
-      ),
-    );}}
