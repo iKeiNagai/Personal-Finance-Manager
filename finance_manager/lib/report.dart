@@ -95,12 +95,19 @@ class MonthlyReport extends StatelessWidget {
             double totalExpenses = (item['total_expenses'] as num).toDouble();
             double totalIncome = (item['total_income'] as num).toDouble();
 
-            double previousExpenses = index < reportData.length - 1
-                ? (reportData[index + 1]['total_expenses'] as num).toDouble()
-                : 0.0;
-            double previousIncome = index < reportData.length - 1
-                ? (reportData[index + 1]['total_income'] as num).toDouble()
-                : 0.0;
+            double previousExpenses = 0.0;
+            double previousIncome = 0.0;
+
+            if (index < reportData.length -1) {
+              final previousItem = reportData[index + 1];
+              String previousMonth = previousItem['month'];
+              DateTime previousMonthString = DateTime.parse("$previousMonth-01");
+              if (previousMonthString.year == monthString.year &&
+                  previousMonthString.month == monthString.month - 1) {
+                previousExpenses = (previousItem['total_expenses'] as num).toDouble();
+                previousIncome = (previousItem['total_income'] as num).toDouble();
+              }
+            }
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),

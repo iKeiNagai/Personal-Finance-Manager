@@ -224,6 +224,14 @@ class DatabaseHelper {
     return await db.delete(table2, where: '$columnId_2 = ?', whereArgs: [id]);
   }
 
+  Future<int> deleteAllTransactionsAccount(int accountId) async {
+    Database db = await instance.database;
+    return await db.delete(
+      table2, 
+      where: '$foreignKey = ?', 
+      whereArgs: [accountId],
+    );
+  }
   Future<List<Map<String, dynamic>>> getMonthlyReport() async {
     final db = await database;
     return await db.rawQuery('''
